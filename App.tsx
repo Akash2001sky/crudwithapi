@@ -19,11 +19,11 @@ import {
   TouchableOpacity,
   useColorScheme,
   View,
+  TextInput
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {TextInput} from 'react-native';
 import axios from 'axios';
 class App extends React.Component {
   state = {
@@ -41,7 +41,7 @@ class App extends React.Component {
   fetchdata = async () => {
     try {
       const response = await axios.get(
-        'https://7194-2405-201-c413-c817-c19d-4b93-5769-be02.ngrok-free.app/gettodo',
+        'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/gettodo',
       );
       this.setState({todoData: response.data.todo});
     } catch (err) {
@@ -57,7 +57,7 @@ class App extends React.Component {
     try {
       await axios
         .delete(
-          `https://7194-2405-201-c413-c817-c19d-4b93-5769-be02.ngrok-free.app/delettodo`,
+          `https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/delettodo`,
           {
             data: {_id: id},
           },
@@ -77,7 +77,7 @@ class App extends React.Component {
     try {
       axios
         .post(
-          'https://7194-2405-201-c413-c817-c19d-4b93-5769-be02.ngrok-free.app/addtodo',
+          'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/addtodo',
           {name: this.state.inputName, email: this.state.inputEmail},
         )
         .then(res => {
@@ -110,7 +110,7 @@ class App extends React.Component {
     console.log(this.state.todoData);
 
     return (
-      <View style={{backgroundColor: '#000000', flex: 1}}>
+      <View style={{backgroundColor: '#000000', flex: 1}} testID='vector'>
         <Text
           style={{
             color: '#ffffff',
@@ -120,7 +120,7 @@ class App extends React.Component {
           }}>
           To-Do.
         </Text>
-        <TouchableOpacity
+        <TouchableOpacity testID='openAdd'
           style={{position: 'absolute', margin: 20, marginLeft: 340}}
           onPress={() => {
             this.setState({addModal: !this.state.addModal});
@@ -128,10 +128,11 @@ class App extends React.Component {
           <AntDesign name="pluscircle" size={40} color="#ffffff" />
         </TouchableOpacity>
         <FlatList
+        testID='flatlistdata'
           data={todoData}
-          renderItem={({item}) => {
+          renderItem={({item,index}:any) => {
             return (
-              <View
+              <View testID='flatdata'
                 style={{
                   backgroundColor: '#ffffff',
                   margin: 10,
@@ -148,7 +149,7 @@ class App extends React.Component {
                       color: '#000000',
                       marginHorizontal: 20,
                     }}>
-                    {item.name}
+                    {item?.name}
                   </Text>
                   <Text
                     style={{
@@ -156,11 +157,11 @@ class App extends React.Component {
                       color: '#000000',
                       marginHorizontal: 20,
                     }}>
-                    {item.email}
+                    {item?.email}
                   </Text>
                 </View>
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableOpacity testID='UpdateButton'
                     onPress={() => {
                       this.setState({
                         isModal: !this.state.isModal,
@@ -175,7 +176,7 @@ class App extends React.Component {
                       color="#000000"
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity
+                  <TouchableOpacity testID='detetebutton'
                     onPress={() => {
                       this.deletedata(item._id);
                     }}>
@@ -207,7 +208,7 @@ class App extends React.Component {
                 alignItems: 'center',
                 borderRadius: 30,
               }}>
-              <TextInput
+              <TextInput testID='addnameinput'
               placeholderTextColor={'#ffffff'}
                 placeholder="Name"
                 style={{
@@ -221,7 +222,7 @@ class App extends React.Component {
                 value={this.state.inputName}
               />
 
-              <TextInput
+              <TextInput testID='addemailinput'
                placeholderTextColor={'#ffffff'}
                 placeholder="Email"
                 style={{
@@ -237,13 +238,13 @@ class App extends React.Component {
               {this.state.emailError ? (
                 <Text style={{color: 'red'}}>{this.state.emailError}</Text>
               ) : null}
-              <TouchableOpacity
+              <TouchableOpacity testID='AddButton'
                 onPress={() => {
                   this.validateEmail();
                   if (this.state.inputEmail && !this.state.emailError) {
                     this.setState({addModal: !this.state.addModal});
                     this.postdata();
-                    Alert.alert('Data added sucessfully!');
+                    //Alert.alert('Data added sucessfully!');
                   }
                 }}
                 style={{
@@ -319,7 +320,7 @@ class App extends React.Component {
                   this.setState({isModal: !this.state.isModal});
                   try {
                     axios.put(
-                      'https://7194-2405-201-c413-c817-c19d-4b93-5769-be02.ngrok-free.app/edittodo',
+                      'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/edittodo',
                       {
                         _id: this.state.getId,
                         name: this.state.updateName,

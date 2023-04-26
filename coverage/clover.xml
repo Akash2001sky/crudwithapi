@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1682520385943" clover="3.2.0">
+  <project timestamp="1682520385943" name="All files">
+    <metrics statements="48" coveredstatements="30" conditionals="10" coveredconditionals="9" methods="20" coveredmethods="10" elements="78" coveredelements="49" complexity="0" loc="48" ncloc="48" packages="1" files="1" classes="1"/>
+    <file name="App.tsx" path="/home/traning/Desktop/Akash3/crudwithapi/App.tsx">
+      <metrics statements="48" coveredstatements="30" conditionals="10" coveredconditionals="9" methods="20" coveredmethods="10"/>
+      <line num="29" count="3" type="stmt"/>
+      <line num="41" count="3" type="stmt"/>
+      <line num="42" count="3" type="stmt"/>
+      <line num="43" count="3" type="stmt"/>
+      <line num="46" count="3" type="stmt"/>
+      <line num="48" count="1" type="stmt"/>
+      <line num="52" count="3" type="stmt"/>
+      <line num="54" count="3" type="stmt"/>
+      <line num="55" count="0" type="stmt"/>
+      <line num="57" count="0" type="stmt"/>
+      <line num="58" count="0" type="stmt"/>
+      <line num="66" count="0" type="stmt"/>
+      <line num="67" count="0" type="stmt"/>
+      <line num="70" count="0" type="stmt"/>
+      <line num="72" count="0" type="stmt"/>
+      <line num="76" count="3" type="stmt"/>
+      <line num="77" count="1" type="stmt"/>
+      <line num="78" count="1" type="stmt"/>
+      <line num="84" count="0" type="stmt"/>
+      <line num="92" count="1" type="stmt"/>
+      <line num="96" count="3" type="stmt"/>
+      <line num="97" count="4" type="stmt"/>
+      <line num="98" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="99" count="1" type="stmt"/>
+      <line num="100" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="101" count="1" type="stmt"/>
+      <line num="103" count="2" type="stmt"/>
+      <line num="108" count="15" type="stmt"/>
+      <line num="110" count="15" type="stmt"/>
+      <line num="112" count="15" type="stmt"/>
+      <line num="126" count="2" type="stmt"/>
+      <line num="134" count="1" type="stmt"/>
+      <line num="166" count="0" type="stmt"/>
+      <line num="181" count="0" type="stmt"/>
+      <line num="221" count="1" type="stmt"/>
+      <line num="234" count="3" type="stmt"/>
+      <line num="243" count="1" type="stmt"/>
+      <line num="244" count="1" type="cond" truecount="3" falsecount="1"/>
+      <line num="245" count="1" type="stmt"/>
+      <line num="246" count="1" type="stmt"/>
+      <line num="295" count="0" type="stmt"/>
+      <line num="307" count="0" type="stmt"/>
+      <line num="320" count="0" type="stmt"/>
+      <line num="321" count="0" type="stmt"/>
+      <line num="322" count="0" type="stmt"/>
+      <line num="330" count="0" type="stmt"/>
+      <line num="331" count="0" type="stmt"/>
+      <line num="333" count="0" type="stmt"/>
+    </file>
+  </project>
+</coverage>
