@@ -19,14 +19,26 @@ import {
   TouchableOpacity,
   useColorScheme,
   View,
-  TextInput
+  TextInput,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import axios from 'axios';
-class App extends React.Component {
-  state = {
+interface Iprops {}
+interface Istate {
+  todoData: [];
+  isModal: boolean;
+  inputName: string;
+  inputEmail: string;
+  updateName: string;
+  updateEmail: string;
+  getId: string;
+  addModal: boolean;
+  emailError: string;
+}
+class App extends React.Component<{}, Istate> {
+  state: Istate = {
     todoData: [],
     isModal: false,
     inputName: '',
@@ -51,23 +63,19 @@ class App extends React.Component {
   componentDidMount(): void {
     this.fetchdata();
   }
-  deletedata = async id => {
+  deletedata = async (id: any) => {
     console.log(id);
 
     try {
-      await axios
-        .delete(
-          `https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/delettodo`,
-          {
-            data: {_id: id},
-          },
-        )
-        .then(res => {
-          this.setState(prevState => ({
-            todoData: prevState.todoData.filter(data => data._id !== id),
-          }));
-        });
-      Alert.alert('Data deleted sucessfully!');
+      await axios.delete(
+        `https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/delettodo`,
+        {
+          data: {_id: id},
+        },
+      );
+      this.fetchdata();
+
+      // Alert.alert('Data deleted sucessfully!');
     } catch (err) {
       console.log(err);
     }
@@ -75,18 +83,13 @@ class App extends React.Component {
 
   postdata = async () => {
     try {
-      axios
-        .post(
-          'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/addtodo',
-          {name: this.state.inputName, email: this.state.inputEmail},
-        )
-        .then(res => {
-          this.setState({
-            todoData: [...this.state.todoData, res.data.todo],
-            inputName: '',
-            inputEmail: '',
-          });
-        });
+      await axios.post(
+        'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/addtodo',
+        {name: this.state.inputName, email: this.state.inputEmail},
+      );
+
+      this.fetchdata();
+
       // Alert.alert('successfully posted !')
     } catch (err) {
       console.log(err);
@@ -110,7 +113,7 @@ class App extends React.Component {
     console.log(this.state.todoData);
 
     return (
-      <View style={{backgroundColor: '#000000', flex: 1}} testID='vector'>
+      <View style={{backgroundColor: '#000000', flex: 1}} testID="vector">
         <Text
           style={{
             color: '#ffffff',
@@ -120,7 +123,8 @@ class App extends React.Component {
           }}>
           To-Do.
         </Text>
-        <TouchableOpacity testID='openAdd'
+        <TouchableOpacity
+          testID="openAdd"
           style={{position: 'absolute', margin: 20, marginLeft: 340}}
           onPress={() => {
             this.setState({addModal: !this.state.addModal});
@@ -128,11 +132,12 @@ class App extends React.Component {
           <AntDesign name="pluscircle" size={40} color="#ffffff" />
         </TouchableOpacity>
         <FlatList
-        testID='flatlistdata'
+          testID="flatlistdata"
           data={todoData}
-          renderItem={({item,index}:any) => {
+          renderItem={({item, index}: any) => {
             return (
-              <View testID='flatdata'
+              <View
+                testID="flatdata"
                 style={{
                   backgroundColor: '#ffffff',
                   margin: 10,
@@ -161,7 +166,8 @@ class App extends React.Component {
                   </Text>
                 </View>
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity testID='UpdateButton'
+                  <TouchableOpacity
+                    testID="UpdateButton"
                     onPress={() => {
                       this.setState({
                         isModal: !this.state.isModal,
@@ -176,7 +182,8 @@ class App extends React.Component {
                       color="#000000"
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity testID='detetebutton'
+                  <TouchableOpacity
+                    testID="detetebutton"
                     onPress={() => {
                       this.deletedata(item._id);
                     }}>
@@ -208,28 +215,30 @@ class App extends React.Component {
                 alignItems: 'center',
                 borderRadius: 30,
               }}>
-              <TextInput testID='addnameinput'
-              placeholderTextColor={'#ffffff'}
+              <TextInput
+                testID="addnameinput"
+                placeholderTextColor={'#ffffff'}
                 placeholder="Name"
                 style={{
                   backgroundColor: '#000000',
                   width: 300,
                   marginBottom: 20,
                   borderRadius: 10,
-                  color:'#ffffff'
+                  color: '#ffffff',
                 }}
                 onChangeText={txt => this.setState({inputName: txt})}
                 value={this.state.inputName}
               />
 
-              <TextInput testID='addemailinput'
-               placeholderTextColor={'#ffffff'}
+              <TextInput
+                testID="addemailinput"
+                placeholderTextColor={'#ffffff'}
                 placeholder="Email"
                 style={{
                   backgroundColor: '#000000',
                   width: 300,
                   borderRadius: 10,
-                  color:'#ffffff'
+                  color: '#ffffff',
                 }}
                 onChangeText={txt => this.setState({inputEmail: txt})}
                 value={this.state.inputEmail}
@@ -238,14 +247,13 @@ class App extends React.Component {
               {this.state.emailError ? (
                 <Text style={{color: 'red'}}>{this.state.emailError}</Text>
               ) : null}
-              <TouchableOpacity testID='AddButton'
+              <TouchableOpacity
+                testID="AddButton"
                 onPress={() => {
                   this.validateEmail();
-                  if (this.state.inputEmail && !this.state.emailError) {
-                    this.setState({addModal: !this.state.addModal});
-                    this.postdata();
-                    //Alert.alert('Data added sucessfully!');
-                  }
+                  this.setState({addModal: !this.state.addModal});
+                  this.postdata();
+                  //Alert.alert('Data added sucessfully!');
                 }}
                 style={{
                   backgroundColor: '#000000',
@@ -293,6 +301,7 @@ class App extends React.Component {
                 }}
                 value={this.state.updateName}
                 onChangeText={txt => this.setState({updateName: txt})}
+                testID="updatetextname"
               />
               <TextInput
                 placeholderTextColor="#ffffff"
@@ -305,8 +314,10 @@ class App extends React.Component {
                 }}
                 value={this.state.updateEmail}
                 onChangeText={txt => this.setState({updateEmail: txt})}
+                testID="updatetextemail"
               />
               <TouchableOpacity
+                testID="updatedatabutton"
                 style={{
                   height: 40,
                   backgroundColor: '#000000',
@@ -319,7 +330,7 @@ class App extends React.Component {
                 onPress={async () => {
                   this.setState({isModal: !this.state.isModal});
                   try {
-                    axios.put(
+                    await axios.put(
                       'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/edittodo',
                       {
                         _id: this.state.getId,
@@ -328,7 +339,9 @@ class App extends React.Component {
                       },
                     );
                     this.fetchdata();
-                    Alert.alert('Data updated sucessfully!');
+                    console.log('Data updated sucessfully!');
+
+                    //Alert.alert('Data updated sucessfully!');
                   } catch (err) {
                     console.log(err);
                   }

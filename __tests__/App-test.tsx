@@ -7,7 +7,14 @@ import React from 'react';
 import App from '../App';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {render, fireEvent, waitFor} from '@testing-library/react-native';
+import nock from 'nock';
+
+import {
+  render,
+  fireEvent,
+  waitFor,
+  screen,
+} from '@testing-library/react-native';
 import axios from 'axios';
 import {FlatList} from 'react-native/Libraries/Lists/FlatList';
 // Note: test renderer must be required after react-native.
@@ -18,7 +25,7 @@ jest.mock(
   'react-native-vector-icons/MaterialCommunityIcons',
   () => 'MaterialCommunityIcons',
 );
-//axios mocking..
+jest.mock('axios');
 axios.get = jest
   .fn()
   .mockImplementationOnce(() => {
@@ -28,36 +35,65 @@ axios.get = jest
     return {
       data: [
         {
-          __v: 0,
-          _id: '6448f40e192e9feb230b23fe',
-          createdAt: '2023-04-26T09:51:10.488Z',
+          _id: '1',
           email: 'sunny123@gmail.com',
           name: 'sunny',
-          updatedAt: '2023-04-26T09:51:10.488Z',
         },
       ],
     };
   });
-
 axios.post = jest
   .fn()
   .mockImplementationOnce(() => {
-    return null;
+    return Promise.reject('failed the post');
   })
   .mockImplementation(() => {
     return {
       data: {
-        __v: 0,
-        _id: '6448f40e192e9feb230b23fe',
-        createdAt: '2023-04-26T09:51:10.488Z',
+        _id: '1',
         email: 'sunny123@gmail.com',
         name: 'sunny',
-        updatedAt: '2023-04-26T09:51:10.488Z',
+      },
+    };
+  });
+axios.delete = jest
+  .fn()
+  .mockImplementationOnce(() => {
+    return Promise.reject('failed the delete');
+  })
+  .mockImplementation(() => {
+    return {
+      data: {
+        _id: '1',
+        email: 'sunny123@gmail.com',
+        name: 'sunny',
+      },
+    };
+  });
+axios.put = jest
+  .fn()
+  .mockImplementationOnce(() => {
+    return Promise.reject('failed the put');
+  })
+  .mockImplementation(() => {
+    return {
+      data: {
+        _id: '1',
+        email: 'sunny123@gmail.com',
+        name: 'sunny',
       },
     };
   });
 
 describe('render the app', () => {
+  beforeEach(() => {
+    render(<App />);
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    nock.cleanAll();
+  });
+
   it('renders correctly', () => {
     const {getByTestId} = render(<App />);
     const vector = getByTestId('vector');
@@ -66,7 +102,8 @@ describe('render the app', () => {
     expect(vector).toBeTruthy();
     fireEvent.press(openAdd);
   });
-  it('put the data', () => {
+
+  it('post the data', async () => {
     const {getByTestId, getByText, queryByText} = render(<App />);
     const openAdd = getByTestId('openAdd');
     fireEvent.press(openAdd);
@@ -74,7 +111,7 @@ describe('render the app', () => {
     const addnameinput = getByTestId('addnameinput');
     const Addbutton = getByTestId('AddButton');
     const addemailinput = getByTestId('addemailinput');
-    fireEvent.changeText(addnameinput);
+    fireEvent.changeText(addnameinput, 'akash');
     fireEvent.changeText(addemailinput, '');
     fireEvent(addemailinput, 'blur');
     expect(getByText('Email is required')).toBeTruthy();
@@ -85,34 +122,123 @@ describe('render the app', () => {
     expect(addemailinput.props.value).toBe('akash@example.com');
     fireEvent(addemailinput, 'blur');
     expect(queryByText('Invalid email format')).toBeFalsy();
+
+    const mockData = {
+      _id: '1',
+      email: 'akash@example.com',
+      name: 'akash',
+    };
+
     fireEvent.press(Addbutton);
-    expect(Addbutton).toBeDefined();
 
-    expect(Addbutton).toBeTruthy();
-    const flatlistdata = getByTestId('flatlistdata');
-    console.log(flatlistdata.props.renderItem);
+    await waitFor(() => expect(screen.queryByText('akash')).toBeDefined());
   });
-  it('Flatlist', () => {
-    const itemData = {
-      __v: 0,
-      _id: '6448f40e192e9feb230b23fe',
-      createdAt: '2023-04-26T09:51:10.488Z',
-      email: 'sunny123@gmail.com',
-      name: 'sunny',
-      updatedAt: '2023-04-26T09:51:10.488Z',
-    }
-    const {getByTestId} =render(<App/>);
-    const flat = getByTestId('flatlistdata');
-    expect(flat).toBeDefined();
-    const element = flat.props.renderItem(itemData);
-console.log(element.props);
+  it('post the data error', async () => {
+    const {getByTestId, getByText, queryByText} = render(<App />);
+    const openAdd = getByTestId('openAdd');
+    fireEvent.press(openAdd);
+    expect(openAdd).toBeTruthy();
+    const addnameinput = getByTestId('addnameinput');
+    const Addbutton = getByTestId('AddButton');
+    const addemailinput = getByTestId('addemailinput');
+    fireEvent.changeText(addnameinput, 'akash');
+    fireEvent.changeText(addemailinput, '');
+    fireEvent(addemailinput, 'blur');
+    expect(getByText('Email is required')).toBeTruthy();
+    fireEvent.changeText(addemailinput, 'invalid');
+    fireEvent(addemailinput, 'blur');
+    expect(getByText('Invalid email format')).toBeTruthy();
+    fireEvent.changeText(addemailinput, 'akash@example.com');
+    expect(addemailinput.props.value).toBe('akash@example.com');
+    fireEvent(addemailinput, 'blur');
+    expect(queryByText('Invalid email format')).toBeFalsy();
 
-    
-    expect(element.props.data).toEqual(itemData);
-    expect(element.type).toBe(Device);
+    await waitFor(() => expect(screen.queryByText('akash')).toBeDefined());
+    // axios.post.mockRejectedValueOnce({error: 'failed request'});
 
-    // const UpdateButton=getByTestId('UpdateButton')
-    // fireEvent.press(UpdateButton);
-    // expect(UpdateButton).toBeTruthy()
+    fireEvent.press(Addbutton);
+    // fireEvent.press(openAdd)
+    // fireEvent.press(Addbutton)
+    await waitFor(() => {
+      expect(axios.post).toHaveBeenCalledWith(
+        'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/addtodo',
+        {email: 'akash@example.com', name: 'akash'},
+      );
+    });
+  });
+  it('should render the todo list items', async () => {
+    const mockResponse = {
+      data: {
+        todo: [
+          {
+            _id: '1',
+            name: 'Do laundry',
+            email: 'laundry@example.com',
+          },
+        ],
+      },
+    };
+    axios.get.mockResolvedValue(mockResponse);
+    const {getByTestId, queryByTestId, getByText} = render(<App />);
+    await waitFor(() => {
+      const todoItems = getByTestId('flatlistdata');
+      expect(todoItems.children.length).toBe(mockResponse.data.todo.length);
+    });
+
+    const updatebutton = getByTestId('UpdateButton');
+    const detetebutton = getByTestId('detetebutton');
+    fireEvent.press(updatebutton);
+    expect(updatebutton).toBeTruthy();
+    const updatetextname = getByTestId('updatetextname');
+    const updatetextemail = getByTestId('updatetextemail');
+    const updatedatabutton = getByTestId('updatedatabutton');
+
+    fireEvent.changeText(updatetextname, 'akash');
+    fireEvent.changeText(updatetextemail, 'akashrebala@gmail.com');
+
+    fireEvent.press(updatedatabutton);
+
+    fireEvent.press(detetebutton);
+    await waitFor(() => expect(screen.queryByText('akash')).toBeDefined());
+  });
+  it('should render the todo list items', async () => {
+    const mockResponse = {
+      data: {
+        todo: [
+          {
+            _id: '1',
+            name: 'Do laundry',
+            email: 'laundry@example.com',
+          },
+        ],
+      },
+    };
+    axios.get.mockResolvedValue(mockResponse);
+    const {getByTestId, queryByTestId, getByText} = render(<App />);
+    await waitFor(() => {
+      const todoItems = getByTestId('flatlistdata');
+      expect(todoItems.children.length).toBe(mockResponse.data.todo.length);
+    });
+
+    const updatebutton = getByTestId('UpdateButton');
+    const detetebutton = getByTestId('detetebutton');
+    fireEvent.press(updatebutton);
+    expect(updatebutton).toBeTruthy();
+    const updatetextname = getByTestId('updatetextname');
+    const updatetextemail = getByTestId('updatetextemail');
+    const updatedatabutton = getByTestId('updatedatabutton');
+
+    fireEvent.changeText(updatetextname, 'akash');
+    fireEvent.changeText(updatetextemail, 'akashrebala@gmail.com');
+
+    fireEvent.press(updatedatabutton);
+
+    fireEvent.press(detetebutton);
+    await waitFor(() => {
+      expect(axios.delete).toHaveBeenCalledWith(
+        'https://e7c9-2405-201-c413-c817-bd6f-a39a-2b00-3081.ngrok-free.app/delettodo',
+        {data: {_id: '1'}},
+      );
+    });
   });
 });
